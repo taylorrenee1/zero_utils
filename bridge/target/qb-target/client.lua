@@ -23,3 +23,21 @@ local function formatOptions(options)
     end
     return options
 end
+
+target.addEntityTarget = function(entities, options)
+    exports['qb-target']:AddTargetEntity(entities, {
+        options = formatOptions(options),
+        distance = options.distance or 2.5
+    })
+    activeTargets[entities] = {
+        type = 'entity',
+        entity = entities,
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeEntityTarget = function(entity)
+    exports['qb-target']:RemoveTargetEntity(entity)
+    activeTargets[entity] = nil
+end
+
