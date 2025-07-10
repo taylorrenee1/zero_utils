@@ -29,4 +29,8 @@ function inventory.openInventory(inv_type, id)
     ox_inventory:openInventory(inv_type, id)
 end
 
+function inventory.Image(item)
+    return 'https://cfx-nui-ox_inventory/web/images/'..item..'.png'
+end
+
 return inventory
