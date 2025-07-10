@@ -21,5 +21,9 @@ function core.getJobData(jobName)
     if not job_data then return false, "Job not found" end
     return job_data
 end
+function core.getGender()
+    local data = core.getPlayerData()
+    return (data.charinfo.gender or 0) + 1 -- 1 = Male, 2 = Female
+end
 
 return core
