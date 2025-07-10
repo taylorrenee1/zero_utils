@@ -62,8 +62,19 @@ target.addModelTarget = function(model, options)
     exports.ox_target:addModel(model, formatOptions(options))
 end
 
-target.removeModelTarget = function(model, options)
-    exports.ox_target:removeModel(model, options)
+target.addBoxZone = function(name, coords, size, options)
+    local id = exports.ox_target:addBoxZone({
+        coords = coords,
+        size = size,
+        rotation = options.rotation or 0,
+        debug = options.debug or false,
+        options = formatOptions(options)
+    })
+    activeTargets[name] = {
+        type = "zone",
+        id = id,
+        invokingResource = GetInvokingResource()
+    }
 end
 
 return target
