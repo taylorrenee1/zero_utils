@@ -119,3 +119,24 @@ target.removeGlobalObject = function(name)
     end
     activeTargets[name] = nil
 end
+
+target.addGlobalVehicle = function(name, options)
+    local formatted = formatOptions(options)
+    exports['qb-target']:AddGlobalVehicle({ options = formatted, distance = options.distance or 2.5 })
+    activeTargets[name] = {
+        type = 'globalVehicle',
+        id = name,
+        options = formatted,
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeGlobalVehicle = function(name)
+    local data = activeTargets[name]
+    if data and data.options then
+        local names = {}
+        for _, v in ipairs(data.options) do names[#names+1] = v.name end
+        exports['qb-target']:RemoveGlobalVehicle(names)
+    end
+    activeTargets[name] = nil
+end
