@@ -57,3 +57,23 @@ target.removeModelTarget = function(model)
     exports['qb-target']:RemoveTargetModel(model)
     activeTargets[model] = nil
 end
+
+target.addBoxZone = function(name, coords, size, options)
+    exports['qb-target']:AddBoxZone(name, coords, size.x, size.y, {
+        name = name,
+        heading = coords.w or 0.0,
+        minZ = coords.z - 1,
+        maxZ = coords.z + 1,
+        debugPoly = false
+    }, formatOptions(options))
+    activeTargets[name] = {
+        type = 'zone',
+        id = name,
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeZone = function(name)
+    exports['qb-target']:RemoveZone(name)
+    activeTargets[name] = nil
+end
