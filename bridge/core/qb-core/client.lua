@@ -31,5 +31,9 @@ function core.getGang()
     return data and data.gang or false, err or "Gang not found"
 end
 
+function core.isDead()
+    local data = core.getPlayerData()
+    return data.metadata and data.metadata.isdead
+end
 
 return core
