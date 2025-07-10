@@ -121,6 +121,26 @@ target.removeGlobalPed = function(name)
     end
 end
 
+target.addGlobalObject = function(name, options)
+    exports.ox_target:addGlobalObject(formatOptions(options))
+    activeTargets[name] = {
+        type = "globalObject",
+        id = name,
+        options = formatOptions(options),
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeGlobalObject = function(name)
+    local targetData = activeTargets[name]
+    if targetData and targetData.options then
+        local names = {}
+        for _, v in ipairs(targetData.options) do names[#names+1] = v.name end
+        exports.ox_target:removeGlobalObject(names)
+        activeTargets[name] = nil
+    end
+end
+
 
 AddEventHandler("onResourceStop", function(resource)
     for key, data in pairs(activeTargets) do
