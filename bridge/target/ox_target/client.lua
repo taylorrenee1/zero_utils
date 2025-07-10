@@ -93,6 +93,31 @@ target.addBoxZone = function(name, coords, size, options)
     }
 end
 
+AddEventHandler("onResourceStop", function(resource)
+    for key, data in pairs(activeTargets) do
+        if data.invokingResource == resource then
+            if data.type == "zone" then
+                exports.ox_target:removeZone(data.id)
+            elseif data.type == "entity" then
+                exports.ox_target:removeLocalEntity(data.entity)
+            elseif data.type == "globalPed" then
+                local names = {}
+                for _, v in ipairs(data.options) do names[#names+1] = v.name end
+                exports.ox_target:removeGlobalPed(names)
+            elseif data.type == "globalObject" then
+                local names = {}
+                for _, v in ipairs(data.options) do names[#names+1] = v.name end
+                exports.ox_target:removeGlobalObject(names)
+            elseif data.type == "globalVehicle" then
+                local names = {}
+                for _, v in ipairs(data.options) do names[#names+1] = v.name end
+                exports.ox_target:removeGlobalVehicle(names)
+            end
+            activeTargets[key] = nil
+        end
+    end
+end)
+
 return target
 
 
