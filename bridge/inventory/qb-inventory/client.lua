@@ -4,3 +4,6 @@ local core = {}
 
 local inventory = {}
 
+function inventory.getItemImage(item)
+    return 'https://cfx-nui-qb-inventory/html/images/'..item..'.png'
+end
