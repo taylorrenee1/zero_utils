@@ -62,6 +62,11 @@ target.addModelTarget = function(model, options)
     exports.ox_target:addModel(model, formatOptions(options))
 end
 
+target.removeModelTarget = function(model)
+    exports.ox_target:removeModel(model)
+end
+
+
 target.addBoxZone = function(name, coords, size, options)
     local id = exports.ox_target:addBoxZone({
         coords = coords,
