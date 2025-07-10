@@ -41,3 +41,19 @@ target.removeEntityTarget = function(entity)
     activeTargets[entity] = nil
 end
 
+target.addModelTarget = function(model, options)
+    exports['qb-target']:AddTargetModel(model, {
+        options = formatOptions(options),
+        distance = options.distance or 2.5
+    })
+    activeTargets[model] = {
+        type = 'model',
+        model = model,
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeModelTarget = function(model)
+    exports['qb-target']:RemoveTargetModel(model)
+    activeTargets[model] = nil
+end
