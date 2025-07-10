@@ -99,3 +99,23 @@ target.removeGlobalPed = function(name)
     activeTargets[name] = nil
 end
 
+target.addGlobalObject = function(name, options)
+    local formatted = formatOptions(options)
+    exports['qb-target']:AddGlobalObject({ options = formatted, distance = options.distance or 2.5 })
+    activeTargets[name] = {
+        type = 'globalObject',
+        id = name,
+        options = formatted,
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeGlobalObject = function(name)
+    local data = activeTargets[name]
+    if data and data.options then
+        local names = {}
+        for _, v in ipairs(data.options) do names[#names+1] = v.name end
+        exports['qb-target']:RemoveGlobalType(3, names)
+    end
+    activeTargets[name] = nil
+end
