@@ -26,4 +26,10 @@ function core.getGender()
     return (data.charinfo.gender or 0) + 1 -- 1 = Male, 2 = Female
 end
 
+function core.getGang()
+    local data, err = core.getPlayerData()
+    return data and data.gang or false, err or "Gang not found"
+end
+
+
 return core
