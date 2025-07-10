@@ -140,3 +140,32 @@ target.removeGlobalVehicle = function(name)
     end
     activeTargets[name] = nil
 end
+
+AddEventHandler("onResourceStop", function(resource)
+    for key, data in pairs(activeTargets) do
+        if data.invokingResource == resource then
+            if data.type == 'entity' then
+                exports['qb-target']:RemoveTargetEntity(data.entity)
+            elseif data.type == 'model' then
+                exports['qb-target']:RemoveTargetModel(data.model)
+            elseif data.type == 'zone' then
+                exports['qb-target']:RemoveZone(data.id)
+            elseif data.type == 'globalPed' then
+                local names = {}
+                for _, v in ipairs(data.options) do names[#names+1] = v.name end
+                exports['qb-target']:RemoveGlobalType(1, names)
+            elseif data.type == 'globalObject' then
+                local names = {}
+                for _, v in ipairs(data.options) do names[#names+1] = v.name end
+                exports['qb-target']:RemoveGlobalType(3, names)
+            elseif data.type == 'globalVehicle' then
+                local names = {}
+                for _, v in ipairs(data.options) do names[#names+1] = v.name end
+                exports['qb-target']:RemoveGlobalVehicle(names)
+            end
+            activeTargets[key] = nil
+        end
+    end
+end)
+
+return target
