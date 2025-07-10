@@ -93,6 +93,14 @@ target.addBoxZone = function(name, coords, size, options)
     }
 end
 
+target.removeZone = function(name)
+    local zone = activeTargets[name]
+    if zone and zone.id then
+        exports.ox_target:removeZone(zone.id)
+        activeTargets[name] = nil
+    end
+end
+
 AddEventHandler("onResourceStop", function(resource)
     for key, data in pairs(activeTargets) do
         if data.invokingResource == resource then
