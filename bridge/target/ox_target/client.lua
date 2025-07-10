@@ -35,6 +35,11 @@ end
 
 target.addNetIDTarget = function(netID, options)
     exports.ox_target:addEntity(netID, formatOptions(options))
+    activeTargets[netID] = {
+        type = "entity",
+        entity = netID,
+        invokingResource = GetInvokingResource()
+    }
 end
 
 target.removeNetIDTarget = function(netId)
@@ -43,14 +48,21 @@ end
 
 target.removeEntityTarget = function(entity)
     exports.ox_target:removeLocalEntity(entity)
+    activeTargets[entity] = nil
 end
 
 target.addModelTarget = function(model, options)
     exports.ox_target:addModel(model, formatOptions(options))
+    activeTargets[model] = {
+        type = "model",
+        model = model,
+        invokingResource = GetInvokingResource()
+    }
 end
 
 target.removeModelTarget = function(model)
     exports.ox_target:removeModel(model)
+    activeTargets[model] = nil
 end
 
 
