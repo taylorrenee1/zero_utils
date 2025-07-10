@@ -10,38 +10,14 @@ local function formatOptions(options)
     end
     for _, option in pairs(options) do
         option.distance = option.distance or distance
-        if option.action then
-            option.onSelect = option.action
-        end
-        
-        if option.item then
-            option.items = option.item
-        end
+        option.onSelect = option.onSelect or option.action
+        option.items = option.items or option.item
+        option.name = option.name or option.label
+
         if option.job or option.gang then
             local group = {}
-            if type(option.job) == "string" then
-                group[#group+1] = option.job
-            else
-                for key, v in pairs(option.job or {}) do
-                    if type(v) =="string" then
-                        group[#group+1] = v
-                    else
-                        group[key] = v
-                    end
-                end
-            end
-            
-            if type(option.gang) == "string" then
-                group[#group+1] = option.gang
-            else
-                for key, v in pairs(option.gang or {}) do
-                    if type(v) =="string" then
-                        group[#group+1] = v
-                    else
-                        group[key] = v
-                    end
-                end
-            end
+            for _, val in pairs(option.job or {}) do group[#group+1] = val end
+            for _, val in pairs(option.gang or {}) do group[#group+1] = val end
             option.groups = group
         end
     end
