@@ -1,5 +1,7 @@
 local target = {}
 
+local activeTargets = {}
+
 local function formatOptions(options)
     local distance
     if options.distance then
@@ -48,6 +50,11 @@ end
 
 target.addEntityTarget = function(entities, options)
     exports.ox_target:addLocalEntity(entities, formatOptions(options))
+    activeTargets[entities] = {
+        type = "entity",
+        entity = entities,
+        invokingResource = GetInvokingResource()
+    }
 end
 
 target.addNetIDTarget = function(netID, options)
