@@ -61,6 +61,10 @@ target.addNetIDTarget = function(netID, options)
     exports.ox_target:addEntity(netID, formatOptions(options))
 end
 
+target.removeNetIDTarget = function(netId)
+    exports.ox_target:removeEntity(netId)
+end
+
 target.removeEntityTarget = function(entity)
     exports.ox_target:removeLocalEntity(entity)
 end
