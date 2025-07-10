@@ -141,6 +141,25 @@ target.removeGlobalObject = function(name)
     end
 end
 
+target.addGlobalVehicle = function(name, options)
+    exports.ox_target:addGlobalVehicle(formatOptions(options))
+    activeTargets[name] = {
+        type = "globalVehicle",
+        id = name,
+        options = formatOptions(options),
+        invokingResource = GetInvokingResource()
+    }
+end
+
+target.removeGlobalVehicle = function(name)
+    local targetData = activeTargets[name]
+    if targetData and targetData.options then
+        local names = {}
+        for _, v in ipairs(targetData.options) do names[#names+1] = v.name end
+        exports.ox_target:removeGlobalVehicle(names)
+        activeTargets[name] = nil
+    end
+end
 
 AddEventHandler("onResourceStop", function(resource)
     for key, data in pairs(activeTargets) do
