@@ -55,4 +55,14 @@ function inventory.getAvailableSlots(inv, owner)
     return check_inv and (check_inv.slots - #check_inv.items) or 0
 end
 
+function inventory.registerShop(id, coords, label, items, society)
+    return ox_inventory:RegisterShop(id, {
+        name = label,
+        inventory = items,
+        locations = coords or nil,
+        groups = society or nil,
+    })
+end
+
+
 return inventory
