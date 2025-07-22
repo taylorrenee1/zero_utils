@@ -1,13 +1,5 @@
 local function notify(src, notify_type, message, options)
-    TriggerClientEvent('t-notify:client:Custom', src,
-    {
-        style = notify_type,
-        duration = 6000,
-        title = options.title,
-        message = message,
-        sound = true,
-        custom = true
-    })
+    TriggerClientEvent('infinity-notify:sendNotify', src, message, notify_type)
 end
 
 return notify
