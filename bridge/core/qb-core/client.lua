@@ -1,5 +1,3 @@
-if not QBCore then QBCore = zutils.core_loader("QBCore") end
-
 local core = {}
 
 function core.getPlayerData()
@@ -21,6 +19,18 @@ function core.getJobData(jobName)
     if not job_data then return false, "Job not found" end
     return job_data
 end
+
+function core.getGroupInfo(isJob)
+    local data = core.getPlayerData()
+    local group = isJob and data?.job or data?.gang
+    return {
+        name = group.name,
+        grade = group.grade.level,
+        label = group.label,
+        isBoss = group.grade.isboss or false, -- Added isboss property
+    }
+end
+
 function core.getGender()
     local data = core.getPlayerData()
     return (data.charinfo.gender or 0) + 1 -- 1 = Male, 2 = Female
