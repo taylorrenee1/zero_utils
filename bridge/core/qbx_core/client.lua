@@ -46,4 +46,18 @@ function core.isDead()
     return data.metadata and data.metadata.isdead
 end
 
+function core.setThirst(thirst)
+    local Player = QBCore.Functions.GetPlayerData()
+    Player.Functions.SetMetaData("thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + thirst)
+    TriggerEvent("hud:client:UpdateNeeds", Player.PlayerData.metadata.hunger, thirst)
+    return true
+end
+
+function core.setHunger(hunger)
+    local Player = QBCore.Functions.GetPlayerData()
+    Player.Functions.SetMetaData("hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + hunger)
+    TriggerEvent("hud:client:UpdateNeeds", hunger, Player.PlayerData.metadata.thirst)
+    return true
+end
+
 return core

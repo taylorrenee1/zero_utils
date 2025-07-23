@@ -29,4 +29,18 @@ function core.getJobData(jobName)
     return job_data
 end
 
+function core.setThirst(src, thirst)
+    local Player = exports.qbx_core:GetPlayerData(tonumber(src))
+    Player.Functions.SetMetaData("thirst", exports.qbx_core:GetPlayerData(tonumber(src)).metadata["thirst"] + thirst)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, Player.PlayerData.metadata.hunger, thirst)
+    return true
+end
+
+function core.setHunger(src, hunger)
+    local Player = exports.qbx_core:GetPlayerData(tonumber(src))
+    Player.Functions.SetMetaData("hunger", exports.qbx_core:GetPlayerData(tonumber(src)).metadata["hunger"] + hunger)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, hunger, Player.PlayerData.metadata.thirst)
+    return true
+end
+
 return core
