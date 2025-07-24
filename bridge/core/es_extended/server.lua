@@ -34,6 +34,41 @@ function core.getJob(src)
     return job
 end
 
+function core.getJobData(jobName)
+    local Jobs = ESX.GetJobs()
+    while not next(Jobs) do
+        Wait(100)
+        Jobs = ESX.GetJobs()
+    end
+    for Role, Grades in pairs(Jobs) do
+        -- Check for if user has added grades
+        if Grades.grades == nil or not next(Grades.grades) then
+            goto continue
+        end
+        for grade, info in pairs(Grades.grades) do
+            if info.label and info.label:find("[Bb]oss") then
+                Jobs[Role].grades[grade].isBoss = true
+                goto continue
+            end
+        end
+        local highestGrade = nil
+        for k in pairs(Grades.grades) do
+            local num = tonumber(k)
+            if num and (not highestGrade or num > highestGrade) then
+                highestGrade = num
+            end
+        end
+
+        if highestGrade then
+            Jobs[Role].grades[tostring(highestGrade)].isBoss = true
+        end
+        ::continue::
+    end
+    local job_data = Jobs[jobName]
+    if not job_data then return false, "Job not found" end
+    return job_data
+end
+
 function core.setThirst(src, thirst)
     TriggerClientEvent('esx_status:add', src, 'thirst', thirst)
     return true
