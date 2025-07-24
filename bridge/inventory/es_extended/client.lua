@@ -1,7 +1,7 @@
 local inventory = {}
 
 function inventory.getInv()
-    local Player  = ESX.getPlayerData()
+    local Player  = ESX.GetPlayerData() 
     return Player.inventory
 end
 
