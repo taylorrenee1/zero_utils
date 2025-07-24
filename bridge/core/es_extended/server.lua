@@ -26,6 +26,14 @@ function core.getPlayerData(src)
     return player_data
 end
 
+function core.getJob(src)
+    local player_data, err = ESX.GetPlayerFromId(src)
+    if not player_data then return false, err end
+    local job = player_data.job
+    if not job then return false, "Job not found" end
+    return job
+end
+
 function core.setThirst(src, thirst)
     TriggerClientEvent('esx_status:add', src, 'thirst', thirst)
     return true
