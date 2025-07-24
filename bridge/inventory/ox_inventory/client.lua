@@ -16,6 +16,14 @@ function inventory.getItemInfo(item)
     }
 end
 
+function inventory.getInv()
+    local PlayerInv = ox_inventory:GetPlayerItems()
+    if not PlayerInv then
+        return {}
+    end
+    return PlayerInv
+end
+
 function inventory.hasItem(item, count, metadata)
     local result = ox_inventory:Search("count", item, metadata)
     if result >= (count or 1) then
