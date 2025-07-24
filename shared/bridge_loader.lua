@@ -10,7 +10,12 @@ local default_bridges = {
     },
     inventory = {
         "ox_inventory",
-        "qb-inventory"
+        "qb-inventory",
+        "codem-inventory",
+        "core_inventory",
+        "origen_inventory",
+        "qs-inventory",
+        "es_extended"
     },
     notify = {
         'jixel-notify',
