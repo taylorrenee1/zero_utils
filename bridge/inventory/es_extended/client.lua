@@ -1,25 +1,22 @@
 local inventory = {}
 
 function inventory.getInv()
-    local Player  = ESX.GetPlayerData() 
-    return Player.inventory
+    local Player  = ESX.GetPlayerData()
+    return Player and Player.inventory or {}
 end
 
-function inventory.hasItem(items, amount, metadata)
-    local amount, count = amount or 1, 0
-    for _, itemData in pairs(QBCore.getPlayerData().items) do
-        if itemData and (itemData.name == items) then
-            printdb("HasItem: Item: %s Slot: %s x(%s)", tostring(items), itemData.slot, tostring(itemData.amount))
-            count += (itemData.amount or 1)
+function inventory.hasItem(item, count, metadata)
+    local PlayerInv = inventory.getInv()
+    local required = count or 1
+    local found = 0
+
+    for _, v in pairs(PlayerInv) do
+        if v.name == item and (not metadata or v.metadata == metadata) then
+            found = found + (v.count or v.amount or v.quantity or 1)
         end
     end
-    if count >= amount then
-        printdb("HasItem: FOUND %s / %s %s", count, amount, tostring(items))
-        return true
-    else
-        printwarn("HasItem: Items %s NOT FOUND", tostring(items))
-        return false
-    end
+
+    return found >= required, (found >= required) and nil or ("You do not have enough: %s"):format(item)
 end
 
 function inventory.getItemImage(item)
