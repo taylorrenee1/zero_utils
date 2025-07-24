@@ -36,6 +36,13 @@ function inventory.hasItem(inv, item, count, metadata)
     if result >= (count or 1) then return true end
     return false, "You do not have enough: " .. item
 end
+function inventory.getInv(src)
+    local PlayerInv = ox_inventory:GetInventoryItems(src)
+    if not PlayerInv then
+        return {}
+    end
+    return PlayerInv
+end
 
 function inventory.registerStash(id, label, slots, max_weight, owner, groups, coords)
     return ox_inventory:RegisterStash(id, label, slots, max_weight, owner, groups, coords)
