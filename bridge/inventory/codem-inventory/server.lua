@@ -23,5 +23,18 @@ function inventory.hasItem(src, item, count, metadata)
     end
 end
 
+function inventory.registerStash(id, label, slots, max_weight, owner, groups, coords)
+    local stash = {
+        id = id,
+        label = label,
+        slots = slots or 30,
+        max_weight = max_weight or 10000,
+        owner = owner or "",
+        groups = groups or {},
+        coords = coords or {}
+    }
+    exports["codem-inventory"]:RegisterStash(stash)
+end
+
 
 return inventory
