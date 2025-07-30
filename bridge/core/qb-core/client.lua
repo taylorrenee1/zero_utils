@@ -37,13 +37,22 @@ function core.getGender()
 end
 
 function core.getGang()
-    local data, err = core.getPlayerData()
-    return data and data.gang or false, err or "Gang not found"
+    local player_data, err = core.getPlayerData()
+    if not player_data then return false, err end
+    local gang = player_data.gang
+    if not gang then return false, "Gang not found" end
+    return gang
 end
 
 function core.isDead()
     local data = core.getPlayerData()
     return data.metadata and data.metadata.isdead
+end
+
+function core.getVehicleProperties(vehicle)
+    local properties = QBCore.Functions.GetVehicleProperties(vehicle)
+    if not properties then return false, "Failed to get vehicle properties" end
+    return properties
 end
 
 function core.setThirst(thirst)

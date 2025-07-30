@@ -14,6 +14,14 @@ function core.getPlayerData(src)
     return player_data
 end
 
+function core.getGang(src)
+    local player_data, err = core.getPlayerData(src)
+    if not player_data then return false, err end
+    local gang = player_data.gang
+    if not gang then return false, "Gang not found" end
+    return gang
+end
+
 function core.getJob(src)
     local player_data, err = core.getPlayerData(src)
     if not player_data then return false, err end
