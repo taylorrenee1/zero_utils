@@ -7,7 +7,7 @@ function core.getPlayerData()
 end
 
 function core.getJob()
-    local player_data, err = ESX.GetPlayerData()
+    local player_data, err = core.getPlayerData()
     if not player_data then return false, err end
     local job = player_data.job
     if not job then return false, "Job not found" end
