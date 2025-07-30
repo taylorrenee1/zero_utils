@@ -1,4 +1,4 @@
---just a wrapper for our logging prefix. 
+--just a wrapper for our logging prefix.
 zutils.core_loader("ox_lib")
 
 function zutils.logger(src, type, msg, ...)
@@ -12,7 +12,7 @@ function zutils.logger(src, type, msg, ...)
             tags[#tags+1] = ("citizenid: %s"):format(player_data.citizenid)
             local ped = GetPlayerPed(src)
             local coords = GetEntityCoords(ped)
-            tags[#tags+1] = ("coords: %s"):format(json.encode(coords))
+            tags[#tags+1] = ("coords: vector3(%s, %s, %s)"):format(coords.x, coords.y, coords.z)
             msg = ("%s(src:%s cid:%s (%s)) %s"):format(GetPlayerName(src),src, player_data.citizenid, character_name , msg)
         end
     end
