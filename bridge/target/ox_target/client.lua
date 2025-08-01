@@ -1,8 +1,12 @@
 local target = {}
-
 local activeTargets = {}
 
 local function formatOptions(options)
+    if not options then
+        local trace = debug.traceback()
+        printerr("No options provided for target %s", trace)
+        return
+    end
     local distance
     if options.distance then
         distance = options.distance
@@ -10,14 +14,38 @@ local function formatOptions(options)
     end
     for _, option in pairs(options) do
         option.distance = option.distance or distance
-        option.onSelect = option.onSelect or option.action
-        option.items = option.items or option.item
-        option.name = option.name or option.label
+        if option.action then
+            option.onSelect = option.action
+        end
 
+        if option.item then
+            option.items = option.item
+        end
         if option.job or option.gang then
             local group = {}
-            for _, val in pairs(option.job or {}) do group[#group+1] = val end
-            for _, val in pairs(option.gang or {}) do group[#group+1] = val end
+            if type(option.job) == "string" then
+                group[#group + 1] = option.job
+            else
+                for key, v in pairs(option.job or {}) do
+                    if type(v) == "string" then
+                        group[#group + 1] = v
+                    else
+                        group[key] = v
+                    end
+                end
+            end
+
+            if type(option.gang) == "string" then
+                group[#group + 1] = option.gang
+            else
+                for key, v in pairs(option.gang or {}) do
+                    if type(v) == "string" then
+                        group[#group + 1] = v
+                    else
+                        group[key] = v
+                    end
+                end
+            end
             option.groups = group
         end
     end
@@ -26,19 +54,19 @@ end
 
 target.addEntityTarget = function(entities, options)
     exports.ox_target:addLocalEntity(entities, formatOptions(options))
-    activeTargets[entities] = {
-        type = "entity",
-        entity = entities,
-        invokingResource = GetInvokingResource()
+    return {
+        remove = function()
+            target.removeEntityTarget(entities, options)
+        end
     }
 end
 
 target.addNetIDTarget = function(netID, options)
     exports.ox_target:addEntity(netID, formatOptions(options))
-    activeTargets[netID] = {
-        type = "entity",
-        entity = netID,
-        invokingResource = GetInvokingResource()
+    return {
+        remove = function()
+            target.removeNetIDTarget(netID, options)
+        end
     }
 end
 
@@ -66,7 +94,7 @@ target.removeModelTarget = function(model)
 end
 
 
-target.addBoxZone = function(name, coords, size, options)
+target.addBoxZoneTarget = function(name, coords, size, options)
     local id = exports.ox_target:addBoxZone({
         coords = coords,
         size = size,
@@ -78,6 +106,11 @@ target.addBoxZone = function(name, coords, size, options)
         type = "zone",
         id = id,
         invokingResource = GetInvokingResource()
+    }
+    return {
+        remove = function()
+            target.removeZoneTarget(id)
+        end
     }
 end
 
@@ -175,6 +208,3 @@ AddEventHandler("onResourceStop", function(resource)
 end)
 
 return target
-
-
-

@@ -1,75 +1,88 @@
+local qb_target = exports['qb-target']
+
 local target = {}
 
 local activeTargets = {}
 
 local function formatOptions(options)
-    local distance
-    if options.distance then
-        distance = options.distance
-        options = options.options or options[1]
+    if not options then
+        return {}
     end
-    for _, option in pairs(options) do
-        option.distance = option.distance or distance
-        option.onSelect = option.onSelect or option.action
-        option.items = option.items or option.item
-        option.name = option.name or option.label
 
-        if option.job or option.gang then
-            local group = {}
-            for _, val in pairs(option.job or {}) do group[#group+1] = val end
-            for _, val in pairs(option.gang or {}) do group[#group+1] = val end
-            option.groups = group
+    for _, option in pairs(options) do
+        if option.onSelect then
+            option.action = option.onSelect
+            option.onSelect = nil
+        end
+
+        if option.group and not option.job and not option.gang then
+            option.job = {}
+            option.gang = {}
+
+            for key, v in pairs(option.group) do
+                if type(v) == "string" then
+                    option.job[#option.job + 1] = v
+                    option.gang[#option.gang + 1] = v
+                else
+                    option.job[key] = v
+                    option.gang[key] = v
+                end
+            end
         end
     end
-    return options
+
+    return {
+        options = options,
+        distance = options.distance or options[1] and options[1].distance or 2.5,
+    }
 end
 
 target.addEntityTarget = function(entities, options)
-    exports['qb-target']:AddTargetEntity(entities, {
-        options = formatOptions(options),
-        distance = options.distance or 2.5
-    })
+    qb_target:AddTargetEntity(entities, formatOptions(options))
     activeTargets[entities] = {
         type = 'entity',
         entity = entities,
         invokingResource = GetInvokingResource()
     }
-end
-
-target.removeEntityTarget = function(entity)
-    exports['qb-target']:RemoveTargetEntity(entity)
-    activeTargets[entity] = nil
-end
-
-target.addModelTarget = function(model, options)
-    exports['qb-target']:AddTargetModel(model, {
-        options = formatOptions(options),
-        distance = options.distance or 2.5
-    })
-    activeTargets[model] = {
-        type = 'model',
-        model = model,
-        invokingResource = GetInvokingResource()
+    return {
+        remove = function()
+            target.removeEntityTarget(entities, options)
+        end
     }
 end
 
-target.removeModelTarget = function(model)
-    exports['qb-target']:RemoveTargetModel(model)
-    activeTargets[model] = nil
+target.addNetIDTarget = function(netID, options)
+    qb_target:AddTargetEntity(netID, formatOptions(options))
+    activeTargets[netID] = {
+        type = 'model',
+        model = options.model or netID,
+        invokingResource = GetInvokingResource()
+    }
+    return {
+        remove = function()
+            target.removeNetIDTarget(netID, options)
+        end
+    }
 end
 
-target.addBoxZone = function(name, coords, size, options)
-    exports['qb-target']:AddBoxZone(name, coords, size.x, size.y, {
-        name = name,
-        heading = coords.w or 0.0,
-        minZ = coords.z - 1,
-        maxZ = coords.z + 1,
-        debugPoly = false
-    }, formatOptions(options))
-    activeTargets[name] = {
+target.addBoxZoneTarget = function(id, coords, size, options)
+    printdb("Adding box zone target %s, %s, %s, %s", id, coords, size, options)
+    qb_target:AddBoxZone(id, coords.xyz, size.y, size.x, {
+        name = id,
+        heading = coords.w or 0,
+        debugPoly = options.debug or false,
+        minZ = coords.z - (size.z / 2),
+        maxZ = coords.z + (size.z / 2),
+    }, formatOptions(options.options))
+    activeTargets[id] = {
         type = 'zone',
-        id = name,
+        id = id,
         invokingResource = GetInvokingResource()
+    }
+    return {
+        remove = function()
+            target.removeZoneTarget(id)
+        end
     }
 end
 
@@ -87,6 +100,10 @@ target.addGlobalPed = function(name, options)
         options = formatted,
         invokingResource = GetInvokingResource()
     }
+end
+
+target.addModelTarget = function(model, options)
+    qb_target:AddTargetModel(model, formatOptions(options))
 end
 
 target.removeGlobalPed = function(name)
@@ -139,6 +156,25 @@ target.removeGlobalVehicle = function(name)
         exports['qb-target']:RemoveGlobalVehicle(names)
     end
     activeTargets[name] = nil
+end
+
+
+
+target.removeNetIDTarget = function(netId, options)
+    qb_target:RemoveTargetEntity(netId, options)
+end
+
+target.removeEntityTarget = function(entities, options)
+    qb_target:RemoveTargetEntity(entities, options)
+end
+
+
+target.removeModelTarget = function(model, options)
+    qb_target:RemoveTargetModel(model, options)
+end
+
+target.removeZoneTarget = function(id)
+    qb_target:RemoveZone(id)
 end
 
 AddEventHandler("onResourceStop", function(resource)
