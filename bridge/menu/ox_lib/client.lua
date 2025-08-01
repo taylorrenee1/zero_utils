@@ -1,21 +1,18 @@
 local menu = {}
+local lib = lib or exports.ox_lib
 
-function menu.registerContext(id, menuData)
+function menu.registerMenu(id, menuData)
     menuData.id = id
     menuData.title = menuData.title or "Menu"
     lib.registerContext(menuData)
 end
 
-function menu.openMenu(id, menuData)
-    if menuData then
-        menu.registerContext(id, menuData)
-    end
+function menu.openMenu(id)
     lib.showContext(id)
 end
 
 function menu.inputDialog(header, inputs)
-    local result = exports.ox_lib:inputDialog(header, inputs)
-    return result
+    return lib:inputDialog(header, inputs)
 end
 
 return menu
