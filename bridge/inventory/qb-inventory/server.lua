@@ -1,4 +1,11 @@
 local qb_inventory = exports['qb-inventory']
+local configCode = LoadResourceFile("qb-inventory", "config.lua")
+if configCode then
+    local func = load(configCode, "qb-inventory-config", "t", _G)
+    if func then func() end
+end
+
+local QBInvConfig = Config
 local inventory = {}
 local stashes = {}
 
@@ -74,6 +81,61 @@ function inventory.getInv(src)
     end
     return PlayerInv
 end
+
+function inventory.getAvailableWeight(src)
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return 0 end
+
+    local inv = Player.PlayerData.items or {}
+    local maxWeight = QBInvConfig.MaxWeight or 120000
+    local total_weight = 0
+
+    for _, item in pairs(inv) do
+        local item_info = inventory.getItemInfo(item.name)
+        local item_weight = item_info and item_info.weight or 0
+        total_weight = total_weight + (item_weight * item.amount)
+    end
+
+    return maxWeight - total_weight
+end
+
+function inventory.getAvailableSlots(src)
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return 0 end
+
+    local inv = Player.PlayerData.items or {}
+    local maxSlots = QBInvConfig.MaxSlots or 50
+    return maxSlots - #inv
+end
+
+function inventory.canCarryItem(src, item, count, metadata)
+    local available_weight = inventory.getAvailableWeight(src)
+    local item_info = inventory.getItemInfo(item)
+
+    if not item_info then
+        return false, "Item does not exist: " .. item
+    end
+
+    local total_weight_needed = item_info.weight * (count or 1)
+    if available_weight < total_weight_needed then
+        return false, "Inventory Cannot carry: " .. item
+    end
+
+    return true
+end
+
+function inventory.addItem(src, item, count, metadata, slot, cb)
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return false, "Player not found" end
+
+    local canCarry, err = inventory.canCarryItem(src, item, count, metadata)
+    if not canCarry then
+        return false, err
+    end
+    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add")
+    return Player.Functions.AddItem(item, count, slot, metadata or {}, cb)
+end
+
 
 function inventory.hasItem(src, item, count, metadata)
     local PlayerInv = inventory.getInv(src)
