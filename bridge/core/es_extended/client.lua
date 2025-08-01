@@ -24,4 +24,20 @@ function core.setHunger(hunger)
     return true
 end
 
+function core.getPlayersFromCoords(coords, distance)
+    local players = {}
+    local playerCoords = GetEntityCoords(PlayerPedId())
+    for _, playerId in ipairs(GetActivePlayers()) do
+        local targetPed = GetPlayerPed(playerId)
+        if targetPed and DoesEntityExist(targetPed) then
+            local targetCoords = GetEntityCoords(targetPed)
+            if #(playerCoords - targetCoords) <= (distance or 5.0) then
+                table.insert(players, playerId)
+            end
+        end
+    end
+    return players
+end
+
+
 return core
