@@ -132,8 +132,21 @@ function inventory.addItem(src, item, count, metadata, slot, cb)
     if not canCarry then
         return false, err
     end
-    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add")
+    TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add")
     return Player.Functions.AddItem(item, count, slot, metadata or {}, cb)
+end
+
+function inventory.removeItem(src, item, count, metadata, slot)
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return false, "Player not found" end
+
+    local hasItem, err = inventory.hasItem(src, item, count, metadata)
+    if not hasItem then
+        return false, err
+    end
+
+    TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item], "remove")
+    return Player.Functions.RemoveItem(item, count, slot, metadata or {})
 end
 
 
