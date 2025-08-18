@@ -50,4 +50,10 @@ function core.setHunger(src, hunger)
     return true
 end
 
+function core.registerUsableItem(itemName, cb)
+    QBCore.Functions.CreateUseableItem(itemName, function(source, item)
+        cb(source, item)
+    end)
+end
+
 return core
