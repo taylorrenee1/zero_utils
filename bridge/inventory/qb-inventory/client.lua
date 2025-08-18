@@ -3,7 +3,7 @@ local inventory = {}
 
 function inventory.hasItem(items, amount, metadata)
     local amount, count = amount or 1, 0
-    for _, itemData in pairs(QBCore.getPlayerData().items) do
+    for _, itemData in pairs(QBCore.Functions.GetPlayerData().items) do
         if itemData and (itemData.name == items) then
             printdb("HasItem: Item: %s Slot: %s x(%s)", tostring(items), itemData.slot, tostring(itemData.amount))
             count += (itemData.amount or 1)
