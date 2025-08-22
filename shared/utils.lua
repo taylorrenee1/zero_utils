@@ -1,3 +1,30 @@
+local function contains(t, search)
+    
+    if type(search) == "table" then
+        for _, v in ipairs(search) do
+            if not contains(t, v) then
+                return false
+            end
+        end
+        return true
+    end
+    
+    if t[search] then
+        return true
+    end
+
+    for _, v in ipairs(t) do
+        if v == search then
+            return true
+        end
+    end
+    return false
+end
+
+table.contains = contains
+
+
+
 function zutils.isResourceStarted(resource)
     local started = GetResourceState(resource):find("start")
     if not started then
