@@ -79,4 +79,12 @@ function core.setHunger(src, hunger)
     return true
 end
 
+function core.registerUsableItem(itemName, cb)
+    ESX.RegisterUsableItem(itemName, function(source)
+        local xPlayer = ESX.GetPlayerFromId(source)
+        local item = xPlayer.getInventoryItem(itemName)
+        cb(source, item)
+    end)
+end
+
 return core
