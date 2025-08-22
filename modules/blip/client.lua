@@ -2,7 +2,7 @@ zutils.blip = {}
 
 local blips = {}
 
-function zutils.blip.creatBlip(name, coords, options)
+function zutils.blip.createBlip(name, coords, options)
     local blip = AddBlipForCoord(coords)
     SetBlipAsShortRange(blip, true)
     SetBlipSprite(blip, options.sprite or 106)
@@ -13,9 +13,17 @@ function zutils.blip.creatBlip(name, coords, options)
     BeginTextCommandSetBlipName('STRING')
     AddTextComponentString(tostring(name))
     EndTextCommandSetBlipName(blip)
-    table.insert(blips, blip)
+
+    if not blips[name] then blips[name] = {} end
+    table.insert(blips[name], blip)
+
     return blip
 end
+
+function zutils.blip.getBlips(name)
+    return blips[name] or {}
+end
+
 
 function zutils.blip.removeBlip(blip)
     if DoesBlipExist(blip) then
