@@ -10,6 +10,8 @@ function menu.registerMenu(id, data)
                 txt = opt.description or opt.txt or "",
                 icon = opt.icon,
                 isMenuHeader = opt.readOnly,
+                disabled = opt.disabled,
+                hidden = opt.hidden or false,
                 params = {
                     event = opt.event,
                     args = opt.args
@@ -39,6 +41,10 @@ function menu.inputDialog(header, inputs)
         submitText = "Submit",
         inputs = inputs
     })
+end
+
+function menu.closeMenu()
+    exports['qb-menu']:closeMenu()
 end
 
 return menu
