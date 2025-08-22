@@ -1,15 +1,15 @@
 local qb_inventory = exports['qb-inventory']
-local configCode = LoadResourceFile("qb-inventory", "config.lua")
-if configCode then
-    local func = load(configCode, "qb-inventory-config", "t", _G)
-    if func then func() end
-end
+-- local configCode = LoadResourceFile("qb-inventory", "config.lua")
+-- if configCode then
+--     local func = load(configCode, "qb-inventory-config", "t", _G)
+--     if func then func() end
+-- end
 
-local QBInvConfig = Config
+-- local QBInvConfig = Config
 local inventory = {}
 local stashes = {}
 
-function inventory.CreateUseableItem(item, func)
+function inventory.createUseableItem(item, func)
     return QBCore.Functions.CreateUseableItem(item, func)
 end
 
@@ -55,7 +55,7 @@ RegisterNetEvent('zero_utils:server:qb-inventory:OpenInventory', function(inv_ty
             stash.groups = { stash.groups }
         end
 
-        if not (table.contains(stash.groups, player_job) or table.contains(stash.groups, player_gang) )then
+        if not (table.contains(stash.groups, player_job) or table.contains(stash.groups, player_gang)) then
             return
         end
 
@@ -74,41 +74,35 @@ RegisterNetEvent('zero_utils:server:qb-inventory:OpenInventory', function(inv_ty
     end
 end)
 
-function inventory.getInv(src)
-    local PlayerInv = QBCore.Functions.GetPlayer(src).PlayerData.items
-    if not PlayerInv then
-        return {}
-    end
-    return PlayerInv
+function inventory.getInv(inv)
+    local inven = qb_inventory:GetInventory(inv)
+    if not inven then return false end
+
+    return inven.items
 end
 
-function inventory.getAvailableWeight(src)
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return 0 end
-
-    local inv = Player.PlayerData.items or {}
-    local maxWeight = QBInvConfig.MaxWeight or 120000
-    local total_weight = 0
-
-    for _, item in pairs(inv) do
-        local item_info = inventory.getItemInfo(item.name)
-        local item_weight = item_info and item_info.weight or 0
-        total_weight = total_weight + (item_weight * item.amount)
+function inventory.getAvailableWeight(inv)
+    if tonumber(inv) then
+        return qb_inventory:GetFreeWeight(inv)
     end
 
-    return maxWeight - total_weight
+    local check_inv = qb_inventory:GetInventory(inv)
+    if check_inv then
+        return check_inv.maxWeight - qb_inventory:GetTotalWeight(inv)
+    else
+        return 0
+    end
 end
 
-function inventory.getAvailableSlots(src)
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return 0 end
-
-    local inv = Player.PlayerData.items or {}
-    local maxSlots = QBInvConfig.MaxSlots or 50
-    return maxSlots - #inv
+function inventory.getAvailableSlots(inv)
+    local _, abailable_slots = qb_inventory:GetSlots(inv)
+    return abailable_slots
 end
 
 function inventory.canCarryItem(src, item, count, metadata)
+    if metadata then
+        printwarn("Metadata search is not supported in qb-inventory bridge at this time")
+    end
     local available_weight = inventory.getAvailableWeight(src)
     local item_info = inventory.getItemInfo(item)
 
@@ -124,46 +118,66 @@ function inventory.canCarryItem(src, item, count, metadata)
     return true
 end
 
-function inventory.addItem(src, item, count, metadata, slot, cb)
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return false, "Player not found" end
+function inventory.addItem(inv, item, count, metadata, slot, cb)
+    if cb then printwarn("Callback is not supported in qb-inventory bridge") end
 
-    local canCarry, err = inventory.canCarryItem(src, item, count, metadata)
-    if not canCarry then
-        return false, err
-    end
-    TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add")
-    return Player.Functions.AddItem(item, count, slot, metadata or {}, cb)
-end
+    local result = qb_inventory:AddItem(inv, item, count, slot, metadata or false, zutils.name .. " add item")
 
-function inventory.removeItem(src, item, count, metadata, slot)
-    local Player = QBCore.Functions.GetPlayer(src)
-    if not Player then return false, "Player not found" end
-
-    local hasItem, err = inventory.hasItem(src, item, count, metadata)
-    if not hasItem then
-        return false, err
+    if not result then
+        return false, "Inventory AddItem failed: " .. item
     end
 
-    TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item], "remove")
-    return Player.Functions.RemoveItem(item, count, slot, metadata or {})
+    if tonumber(inv) then
+        TriggerClientEvent('qb-inventory:client:ItemBox', inv, QBCore.Shared.Items[item], "add", count)
+        Wait(100)
+    end
+
+    return result
 end
 
+function inventory.removeItem(inv, item, count, metadata, slot)
+    if metadata then
+        printwarn("Metadata search is not supported in qb-inventory bridge at this time")
+    end
+    local result = qb_inventory:RemoveItem(inv, item, count, slot, zutils.name .. " remove item")
 
-function inventory.hasItem(src, item, count, metadata)
-    local PlayerInv = inventory.getInv(src)
-    if not PlayerInv then
+    if not result then
+        return false, "Inventory RemoveItem failed: " .. tostring(item)
+    end
+
+    if tonumber(inv) then
+        TriggerClientEvent('qb-inventory:client:ItemBox', inv, QBCore.Shared.Items[item], "remove", count)
+    end
+
+    return true
+end
+
+function inventory.hasItem(inv, item, count, metadata)
+    if metadata then
+        printwarn("Metadata search is not supported in qb-inventory bridge at this time")
+    end
+    if tonumber(inv) then
+        local result = qb_inventory:HasItem(inv, item, count)
+        if result then
+            return true
+        end
+        return false, "You do not have enough: " .. item
+    end
+    local inven = inventory.getInv(inv)
+    if not inven then
         return false, "You do not have enough: " .. item
     end
 
-    local result = 0
-    for _, v in pairs(PlayerInv) do
-        if v.name == item and (not metadata or v.info.metadata == metadata) then
-            result = result + v.amount
+    local total_found = 0
+    for _, v in pairs(inven) do
+        if v.name == item then
+            total_found = total_found + v.amount
+        end
+        if total_found >= count then
+            return true
         end
     end
 
-    if result >= (count or 1) then return true end
     return false, "You do not have enough: " .. item
 end
 
