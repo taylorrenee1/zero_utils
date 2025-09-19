@@ -56,4 +56,16 @@ function core.registerUsableItem(itemName, cb)
     end)
 end
 
+function core.removeMoney(src, amount, method, reason)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    return player.Functions.RemoveMoney(method, amount, reason)
+end
+
+function core.addMoney(src, amount, method, reason)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    return player.Functions.AddMoney(method, amount, reason)
+end
+
 return core
