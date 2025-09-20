@@ -1,0 +1,4 @@
+local emote = {}
+
+
+return emote
