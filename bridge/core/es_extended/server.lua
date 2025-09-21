@@ -87,4 +87,20 @@ function core.registerUsableItem(itemName, cb)
     end)
 end
 
+if zutils.name == "zero_utils" then
+    RegisterNetEvent("zero_utils:server:esx_toggleDuty", function()
+        local src = source
+        local player, err = core.getPlayer(src)
+        if not player then
+            printwarn(err)
+            return
+        end
+        local job = player.job
+        local grade = job.grade
+        local onDuty = job.onDuty
+
+        player.setJob(job.name, grade, not onDuty)
+    end)
+end
+
 return core
