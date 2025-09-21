@@ -46,6 +46,22 @@ function zutils.player.getMoney(moneyType, src)
     return player_data.money[moneyType] or 0
 end
 
+function zutils.player.setThirst(thirst)
+    return player.setThirst(thirst)
+end
+
+function zutils.player.setHunger(hunger)
+    return player.setHunger(hunger)
+end
+
+function zutils.player.getPedArmour(src)
+    return GetPedArmour(src or PlayerPedId())
+end
+
+function zutils.player.setArmour(armour, src)
+    return SetPedArmour(src or PlayerPedId(), GetPedArmour(PlayerPedId()) + armour)
+end
+
 function zutils.player.removeMoney(src, amount, payment_method, reason)
     if zutils.context == "client" then
         printwarn("zutils.player.removeMoney should not be called from the client!")
@@ -62,6 +78,10 @@ function zutils.player.addMoney(src, amount, payment_method, reason)
     end
 
     return player.addMoney(src, amount, payment_method or "cash", reason)
+end
+
+function zutils.player.toggleDuty(duty, src)
+    return player.toggleDuty(duty, src)
 end
 
 return zutils.player
