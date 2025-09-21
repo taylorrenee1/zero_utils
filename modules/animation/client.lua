@@ -1,3 +1,5 @@
+local emotes = zutils.bridge_loader("emote", "client")
+if not emotes then return end
 zutils.animation = {}
 
 function zutils.animation.loadAnimDict(dict)
@@ -64,5 +66,15 @@ function zutils.animation.stopAnim(ped, dict, anim)
 
     return true
 end
+
+function zutils.animation.playEmote(name, variation)
+    if not name then return printwarn("No emote name provided") end
+    emotes.start(name, variation)
+end
+
+function zutils.animation.cancelEmote()
+    emotes.cancel()
+end
+
 
 return zutils.animation
