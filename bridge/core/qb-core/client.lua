@@ -84,4 +84,18 @@ function core.getPlayersFromCoords(coords, distance)
     return players
 end
 
+function core.toggleDuty(duty, src)
+    if not duty then
+        TriggerServerEvent("QBCore:ToggleDuty")
+    else
+        local player = core.getPlayerData(src)
+        if not player then return false, "Player Data not found" end
+        player.Functions.SetJobDuty(duty)
+    end
+end
+
+function core.event.OnJobUpdated(cb)
+    RegisterNetEvent("QBCore:Client:OnJobUpdate", cb)
+end
+
 return core
