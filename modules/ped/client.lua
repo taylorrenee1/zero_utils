@@ -180,6 +180,26 @@ function zutils.ped.RemovePed(pedid)
     peds[pedid] = nil
 end
 
+function zutils.ped.turnTo(ped, target, duration)
+    if not DoesEntityExist(ped) then return false, "ped does not exist" end
+    local targetCoords
+    if type(target) == "vector3" then
+        targetCoords = target
+    elseif type(target) == "number" then
+        if not DoesEntityExist(target) then return false, "target entity does not exist" end
+        targetCoords = GetEntityCoords(target)
+    end
+
+    TaskTurnPedToFaceCoord(ped, targetCoords.x, targetCoords.y, targetCoords.z, duration or -1)
+
+    while not IsPedHeadingTowardsPosition(ped, targetCoords.x, targetCoords.y, targetCoords.z, 20.0) do
+        Wait(100)
+    end
+    Wait(100)
+    ClearPedTasks(ped)
+    return true
+end
+
 AddEventHandler("onResourceStop", function(resource)
     if resource == GetCurrentResourceName() then
         for _, data in pairs(peds) do
