@@ -26,4 +26,9 @@ function inventory.hasItem(src, item, count, metadata)
     end
 end
 
+function inventory.createUseableItem(itemName, cb)
+    return printwarn("CreateUseableItem is not supported in core_inventory bridge")
+end
+
+
 return inventory

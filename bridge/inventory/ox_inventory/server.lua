@@ -71,5 +71,10 @@ function inventory.registerShop(id, coords, label, items, society)
     })
 end
 
+function inventory.createUseableItem(itemName, cb)
+    return printwarn("CreateUseableItem is not supported in ox_inventory bridge")
+end
+
+
 
 return inventory

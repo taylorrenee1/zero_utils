@@ -9,5 +9,8 @@ function inventory.getInv(src)
     return PlayerInv
 end
 
+function inventory.createUseableItem(item, func)
+    return QBCore.Functions.CreateUseableItem(item, func)
+end
 
 return inventory

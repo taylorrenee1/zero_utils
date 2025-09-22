@@ -22,4 +22,9 @@ function inventory.hasItem(src, item, count, metadata)
     return found >= required, (found >= required) and nil or ("You do not have enough: %s"):format(item)
 end
 
+function inventory.createUseableItem(itemName, cb)
+    return printwarn("CreateUseableItem is not supported in origen_inventory bridge")
+end
+
+
 return inventory

@@ -36,5 +36,9 @@ function inventory.registerStash(id, label, slots, max_weight, owner, groups, co
     exports["codem-inventory"]:RegisterStash(stash)
 end
 
+function inventory.createUseableItem(itemName, cb)
+    return printwarn("CreateUseableItem is not supported in codem-inventory bridge")
+end
+
 
 return inventory
