@@ -17,7 +17,14 @@ local default_bridges = {
         "qs-inventory",
         "es_extended"
     },
+    job = {
+        "qb-core",
+        "qbx-core",
+        "es_extended",
+        "ox_core",
+    },
     notify = {
+        'qb-notify',
         'jixel-notify',
         'ox_lib',
     },
@@ -31,9 +38,25 @@ local default_bridges = {
     },
     target = {
         "ox_target",
+        "qb-target"
     },
     menu = {
         "ox_lib",
+        "qb-menu",
+        "jim-menu"
+    },
+    shop = {
+        "ox_inventory",
+        "qb-inventory",
+    },
+    keys = {
+        "dusa_vehiclekeys"
+    },
+    emote = {
+        "rpemotes",
+        "rpemotes-reborn",
+        "dpemotes",
+        "emotes"
     },
 }
 
@@ -41,6 +64,7 @@ local bridge_aliases  = {
     inventory = {
         ox = "ox_inventory",
         qb = "qb-inventory",
+        qs = "qs-inventory",
     },
     banking = {
         fd = "fd_banking",
@@ -48,6 +72,7 @@ local bridge_aliases  = {
     notify = {
         ox = "ox_lib",
         jixel = "jixel-notify",
+        qb = "qb-notify"
     },
     callback = {
         ox = "ox_lib",
@@ -55,7 +80,14 @@ local bridge_aliases  = {
     },
     target = {
         ox = "ox_target",
+        qb = "qb-target",
     },
+    emotes = {
+        rpe = "rpemotes",
+        rpe_reborn = "rpemotes-reborn",
+        dpe = "dpemotes",
+        emotes = "emotes"
+    }
 }
 
 local function resolve_bridge_alias(module_name, bridge_resource)
@@ -90,6 +122,7 @@ local function bridge_loader(module_name, context)
     while not zutils.initialized do
         Wait(100)
     end
+    printdb("Attempting to load bridge for module: %s in context: %s", module_name, context or zutils.context)
     context = context or zutils.context
     module_name = module_name:gsub("^%l", string.lower) -- Ensure module name is lowercase
 

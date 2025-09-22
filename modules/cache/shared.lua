@@ -1,4 +1,5 @@
 local cache = {}
+local events = {}
 local localCache = {}
 local isMainResource = zutils.name == 'zero_utils'
 
@@ -26,32 +27,40 @@ if isMainResource then
     exports('getAllCache', cache.getAll)
 
     if zutils.context == "client" then
+        local _PlayerPedID = PlayerPedId
+        local _GetSelectedPedWeapon = GetSelectedPedWeapon
+        local _GetVehiclePedIsIn = GetVehiclePedIsIn
+        local _GetPedInVehicleSeat = GetPedInVehicleSeat
+        local _GetVehicleMaxNumberOfPassengers = GetVehicleMaxNumberOfPassengers
         CreateThread(function()
             while true do
-                local ped = PlayerPedId()
+                local ped = _PlayerPedID()
                 cache.set('ped', ped)
-    
-                local vehicle = GetVehiclePedIsIn(ped, false)
+
+                local weapon = _GetSelectedPedWeapon(ped)
+                cache.set('weapon', weapon)
+
+                local vehicle = _GetVehiclePedIsIn(ped, false)
                 if vehicle > 0 then
                     if vehicle ~= cache.vehicle then
                         cache.set("seat", false)
                     end
-    
-                    if not cache.seat or GetPedInVehicleSeat(vehicle, cache.seat) ~= ped then
-                        for i = -1, GetVehicleMaxNumberOfPassengers(vehicle) - 1 do
-                            if GetPedInVehicleSeat(vehicle, i) == ped then
+
+                    if not cache.seat or _GetPedInVehicleSeat(vehicle, cache.seat) ~= ped then
+                        for i = -1, _GetVehicleMaxNumberOfPassengers(vehicle) - 1 do
+                            if _GetPedInVehicleSeat(vehicle, i) == ped then
                                 cache.set('seat', i)
                                 break
                             end
                         end
                     end
-    
+
                     cache.set("vehicle", vehicle)
                 else
                     cache.set("seat", false)
                     cache.set("vehicle", false)
                 end
-    
+
                 Wait(100)
             end
         end)
@@ -74,6 +83,18 @@ else
             localCache[key] = value
         end
 
+        if not events[key] then
+            events[key] = {}
+            events[key][1] = function (new, old)
+                localCache[key] = new
+            end
+            AddEventHandler(('zutils:cache:%s'):format(key), function(new, old)
+                for _, event in ipairs(events[key]) do
+                    event(new, old)
+                end
+            end)
+        end
+
         return value
     end
 
@@ -87,14 +108,12 @@ function cache.onSet(key, callback)
         return printerr('Cache listener callback must be a function')
     end
 
-    local eventName = ('zutils:cache:%s'):format(key)
-    
-    local handler = AddEventHandler(eventName, function(newValue, oldValue)
-        localCache[key] = newValue
-        callback(newValue, oldValue)
-    end)
-    return function()
-        RemoveEventHandler(handler)
+    if not events[key] then
+        cache.get(key)
+    end
+
+    events[key][#events[key]+1] = function (new, old)
+        callback(new, old)
     end
 end
 
@@ -103,7 +122,7 @@ setmetatable(cache, {
         local func = rawget(self, key)
         if func then return func end
 
-        return localCache[key] or  self.get(key)
+        return localCache[key] or self.get(key)
     end,
 
     __newindex = function(self, key, value)
