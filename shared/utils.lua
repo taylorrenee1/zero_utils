@@ -1,29 +1,4 @@
-local function contains(t, search)
-    
-    if type(search) == "table" then
-        for _, v in ipairs(search) do
-            if not contains(t, v) then
-                return false
-            end
-        end
-        return true
-    end
-    
-    if t[search] then
-        return true
-    end
-
-    for _, v in ipairs(t) do
-        if v == search then
-            return true
-        end
-    end
-    return false
-end
-
-table.contains = contains
-
-
+zutils.require('/shared/table.lua')
 
 function zutils.isResourceStarted(resource)
     local started = GetResourceState(resource):find("start")
@@ -258,7 +233,7 @@ function zutils.AwaitNetId(entity)
         end
         Wait(100)
     end
-    
+
     return netId
 end
 
@@ -418,7 +393,7 @@ function zutils.GetClosestVehicle(maxDist)
 			closestVehicle = veh
 		end
 	end
-	
+
 	return closestVehicle
 end
 
@@ -438,7 +413,7 @@ function zutils.GetPlayerData(src)
     elseif src then
         printwarn("GetPlayerData called with src but not in server context")
     end
-    
+
     local player_data = QBCore.Functions.GetPlayerData()
     if not player_data then return false, "Player Data not found" end
     return player_data
