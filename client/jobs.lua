@@ -9,7 +9,7 @@ zutils.cache.job = {
 }
 zutils.cache.onduty = false
 
-core.event.onJobUpdated(function(job)
+core.onJobUpdate(function(job)
     zutils.cache.job = {
         name = job.name,
         onduty = job.onduty,
@@ -18,4 +18,3 @@ core.event.onJobUpdated(function(job)
     }
     zutils.cache.onduty = job.onduty
 end)
-
