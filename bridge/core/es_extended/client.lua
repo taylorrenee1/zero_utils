@@ -49,7 +49,7 @@ function core.toggleDuty(duty, src)
     end
 end
 
-function core.event.OnJobUpdate(cb)
+function core.onJobUpdate(cb)
     RegisterNetEvent("esx:setJob", cb)
 end
 

@@ -50,12 +50,6 @@ function core.setHunger(src, hunger)
     return true
 end
 
-function core.registerUsableItem(itemName, cb)
-    QBCore.Functions.CreateUseableItem(itemName, function(source, item)
-        cb(source, item)
-    end)
-end
-
 function core.removeMoney(src, amount, method, reason)
     local player, err = core.getPlayer(src)
     if not player then return false, err end

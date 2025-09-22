@@ -79,14 +79,6 @@ function core.setHunger(src, hunger)
     return true
 end
 
-function core.registerUsableItem(itemName, cb)
-    ESX.RegisterUsableItem(itemName, function(source)
-        local xPlayer = ESX.GetPlayerFromId(source)
-        local item = xPlayer.getInventoryItem(itemName)
-        cb(source, item)
-    end)
-end
-
 if zutils.name == "zero_utils" then
     RegisterNetEvent("zero_utils:server:esx_toggleDuty", function()
         local src = source
