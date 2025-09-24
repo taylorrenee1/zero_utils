@@ -1,11 +1,4 @@
 local qb_inventory = exports['qb-inventory']
--- local configCode = LoadResourceFile("qb-inventory", "config.lua")
--- if configCode then
---     local func = load(configCode, "qb-inventory-config", "t", _G)
---     if func then func() end
--- end
-
--- local QBInvConfig = Config
 local inventory = {}
 local stashes = {}
 

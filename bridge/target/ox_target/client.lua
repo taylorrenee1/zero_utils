@@ -13,7 +13,7 @@ local function formatOptions(options)
         options = options.options or options[1]
     end
     for _, option in pairs(options) do
-        option.distance = option.distance or distance
+        option.distance = option.distance or distance or 2.5
         if option.action then
             option.onSelect = option.action
         end
