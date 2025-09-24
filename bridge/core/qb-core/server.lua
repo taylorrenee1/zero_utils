@@ -37,16 +37,18 @@ function core.getJobData(jobName)
 end
 
 function core.setThirst(src, thirst)
-    local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.SetMetaData("thirst", QBCore.Functions.GetPlayerData(src).metadata["thirst"] + thirst)
-    TriggerClientEvent("hud:client:UpdateNeeds", src, Player.PlayerData.metadata.hunger, thirst)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData("thirst", player.PlayerData.metadata["thirst"] + thirst)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, player.PlayerData.metadata.hunger, thirst)
     return true
 end
 
 function core.setHunger(src, hunger)
-    local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.SetMetaData("hunger", QBCore.Functions.GetPlayerData(src).metadata["hunger"] + hunger)
-    TriggerClientEvent("hud:client:UpdateNeeds", src, hunger, Player.PlayerData.metadata.thirst)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData("hunger", player.PlayerData.metadata["hunger"] + hunger)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, hunger, player.PlayerData.metadata.thirst)
     return true
 end
 

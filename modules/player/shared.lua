@@ -46,12 +46,12 @@ function zutils.player.getMoney(moneyType, src)
     return player_data.money[moneyType] or 0
 end
 
-function zutils.player.setThirst(thirst)
-    return player.setThirst(thirst)
+function zutils.player.setThirst(src, thirst)
+    return player.setThirst(src, thirst)
 end
 
-function zutils.player.setHunger(hunger)
-    return player.setHunger(hunger)
+function zutils.player.setHunger(src, hunger)
+    return player.setHunger(src, hunger)
 end
 
 function zutils.player.getPedArmour(src)
