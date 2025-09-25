@@ -34,6 +34,7 @@ local core_definitions = {
     },
     ox_lib = {
         resource = "ox_lib",
+        optional = true, -- add this
         ignore_source = '@@ox_lib/init.lua',
         loader = function()
             if lib then return lib end
@@ -42,13 +43,11 @@ local core_definitions = {
                 printerr("Failed to load ox_lib: Resource file not found")
                 return nil
             end
-
             local fn, err = load(chunk, '@ox_lib/init.lua')
             if not fn then
                 printerr("Failed to load ox_lib: %s", err)
                 return nil
             end
-
             fn()
             return lib
         end
@@ -86,7 +85,7 @@ function zutils.core_loader(core_name)
             return nil
         end
     end
-    
+
     local success, core = pcall(core_def.loader)
 
     loading_cores[core_name] = nil
@@ -105,7 +104,22 @@ function zutils.core_loader(core_name)
     return core
 end
 
-if not zutils.isResourceMissing("qb-core") then
+for core_name, def in pairs(core_definitions) do
+    if zutils.isResourceStarted(def.resource) then
+        if _G[core_name] == nil then
+            _G[core_name] = setmetatable({}, {
+                __index = function(self, key)
+                    return Core[key] or zutils.core_loader(core_name)[key]
+                end,
+                __call = function(self, ...)
+                    return Core(...)
+                end
+            })
+        end
+    end
+end
+
+--[[ if not zutils.isResourceMissing("qb-core") then
     if not zutils.isResourceStarted("qb-core") then
         printerr("QBCore is not started, please ensure that qb-core is ensure before this script is.")
     end
@@ -119,6 +133,6 @@ if not zutils.isResourceMissing("qb-core") then
             return Core(...)
         end
     })
-end
+end ]]
 
 return zutils.core_loader
