@@ -97,8 +97,8 @@ function zutils.inventory.registerStash(id, label, slots, max_weight, owner, gro
     end
     slots = slots or 50
     max_weight = max_weight or 1000000
-    printdb( "Registering stash: %s with label: %s, slots: %s, max_weight: %s, owner: %s", id, label, slots, max_weight, owner)
     inventory.registerStash(id, label, slots, max_weight, owner, groups, coords)
+    printdb( "Registered stash: %s with label: %s, slots: %s, max_weight: %s, owner: %s", id, label, slots, max_weight, owner)
 end
 
 zutils.inventory.RegisterStash = zutils.inventory.registerStash -- Alias for compatibility
