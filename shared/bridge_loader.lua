@@ -4,7 +4,7 @@ local default_bridges = {
     core = {
         "qb-core",
         "ox_core",
-        "qbx-core",
+        "qbx_core",
         "es_extended"
     },
     banking = {
@@ -76,6 +76,12 @@ local bridge_aliases  = {
         ox = "ox_inventory",
         qb = "qb-inventory",
         qs = "qs-inventory",
+    },
+    core = {
+        qb = "qb-core",
+        qbx = "qbx_core",
+        esx = "es_extended",
+        ox = "ox_core",
     },
     banking = {
         fd = "fd_banking",

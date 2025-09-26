@@ -15,10 +15,10 @@ local core_definitions = {
         end
     },
     qbx_core = {
-        resource = "qbx-core",
+        resource = "qbx_core",
         loader = function()
             if not next(Core) then
-                Core = exports['qbx-core']:GetCoreObject()
+                Core = exports['qb-core']:GetCoreObject()
             end
             return Core
         end
