@@ -86,7 +86,7 @@ function core.toggleDuty(duty, src)
 end
 
 function core.onJobUpdate(cb)
-    RegisterNetEvent("qbx_core:Client:OnJobUpdate", cb)
+    RegisterNetEvent("QBCore:Client:OnJobUpdate", cb)
 end
 
 
