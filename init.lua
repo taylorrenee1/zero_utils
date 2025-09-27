@@ -84,16 +84,15 @@ zutils.require = function(path)
     if not fn or err then return error(("failed to import module (%s) %s"):format(path, err)) end
     return fn()
 end
-
+if zutils.name == "zero_utils" then
+    Config = Config or {}
+    Config.Debug = true
+end
 zutils.require('/shared/printutils.lua')
 zutils.require('/shared/utils.lua')
 zutils.require('/shared/core_loader.lua')
 
 zutils.initialized = true
-
-if zutils.name == "zero_utils" then
-    zutils.bridge_loader('core')
-end
 
 local _ = zutils.cache
 printdb("zero_utils initialized: %s", zutils.initialized)

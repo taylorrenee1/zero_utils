@@ -119,20 +119,4 @@ for core_name, def in pairs(core_definitions) do
     end
 end
 
---[[ if not zutils.isResourceMissing("qb-core") then
-    if not zutils.isResourceStarted("qb-core") then
-        printerr("QBCore is not started, please ensure that qb-core is ensure before this script is.")
-    end
-    if QBCore then return end
-    QBCore = {}
-    setmetatable(QBCore, {
-        __index = function(self, key)
-            return Core[key] or zutils.core_loader("QBCore")[key]
-        end,
-        __call = function(self, ...)
-            return Core(...)
-        end
-    })
-end ]]
-
 return zutils.core_loader

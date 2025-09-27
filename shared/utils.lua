@@ -1,7 +1,7 @@
 zutils.require('/shared/table.lua')
 
 function zutils.isResourceStarted(resource)
-    local started = GetResourceState(resource):find("start")
+    local started = GetResourceState(resource):find("started")
     if not started then
         printdb("Resource [%s] is not started", resource)
         return false
