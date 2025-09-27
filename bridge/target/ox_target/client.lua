@@ -109,7 +109,7 @@ target.addBoxZoneTarget = function(name, coords, size, options)
     }
     return {
         remove = function()
-            target.removeZoneTarget(id)
+            target.removeZone(id)
         end
     }
 end
