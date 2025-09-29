@@ -29,18 +29,88 @@ function core.getJobData(jobName)
     return job_data
 end
 
+function core.addThirst(src, thirst)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData("thirst", player.PlayerData.metadata["thirst"] + thirst)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, player.PlayerData.metadata.hunger, thirst)
+    return true
+end
+
 function core.setThirst(src, thirst)
-    local Player = exports.qbx_core:GetPlayerData(tonumber(src))
-    Player.Functions.SetMetaData("thirst", exports.qbx_core:GetPlayerData(tonumber(src)).metadata["thirst"] + thirst)
-    TriggerClientEvent("hud:client:UpdateNeeds", src, Player.PlayerData.metadata.hunger, thirst)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData("thirst", thirst)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, player.PlayerData.metadata.hunger, thirst)
+    return true
+end
+
+function core.addHunger(src, hunger)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData("hunger", player.PlayerData.metadata["hunger"] + hunger)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, player.PlayerData.metadata.hunger, player.PlayerData.metadata.thirst)
     return true
 end
 
 function core.setHunger(src, hunger)
-    local Player = exports.qbx_core:GetPlayerData(tonumber(src))
-    Player.Functions.SetMetaData("hunger", exports.qbx_core:GetPlayerData(tonumber(src)).metadata["hunger"] + hunger)
-    TriggerClientEvent("hud:client:UpdateNeeds", src, hunger, Player.PlayerData.metadata.thirst)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData("hunger", hunger)
+    TriggerClientEvent("hud:client:UpdateNeeds", src, hunger, player.PlayerData.metadata.thirst)
     return true
+end
+
+function core.updateStress(src, stress)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData('stress', player.PlayerData.metadata["stress"] + stress)
+    TriggerClientEvent('hud:client:UpdateStress', src, stress)
+end
+
+function core.relieveStress(src, stress)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData('stress', player.PlayerData.metadata["stress"] - stress)
+    TriggerClientEvent('hud:client:UpdateStress', src, stress)
+end
+
+function core.setStress(src, stress)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    player.Functions.SetMetaData('stress', player.PlayerData.metadata["stress"] + stress)
+    TriggerClientEvent('hud:client:UpdateStress', src, stress)
+end
+
+function core.addHealth(src, health)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    local entity = GetPlayerPed(src)
+    local max_health = GetEntityMaxHealth(entity)
+    local current_health = GetEntityHealth(entity)
+    if current_health <= 0 then return end
+    local new_health = math.clamp(100, current_health + health, max_health)
+    Entity(entity).state:set('sv_health', new_health, true)
+end
+
+function core.setHealth(src, health)
+    if not src then return end
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    local entity = GetPlayerPed(src)
+    local max_health = GetEntityMaxHealth(entity)
+    local new_health = math.clamp(100, health, max_health)
+    Entity(entity).state:set('sv_health', new_health, true)
+end
+
+function core.addArmour(src, armour)
+    local currArmour = GetPedArmour(src)
+    if currArmour >= 100 then return end
+    SetPedArmour(src, math.min(100, math.floor(currArmour + armour)))
+end
+
+function core.setArmour(src, armour)
+    SetPedArmour(src, armour)
 end
 
 return core
