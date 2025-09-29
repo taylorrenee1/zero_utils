@@ -5,8 +5,8 @@ local Core = {}
 local loaded_cores = {}
 local loading_cores = {}
 local core_definitions = {
-    QBCore = {
-        resource = "qb-core",
+    qbx_core = {
+        resource = "qbx_core",
         loader = function()
             if not next(Core) then
                 Core = exports['qb-core']:GetCoreObject()
@@ -14,8 +14,8 @@ local core_definitions = {
             return Core
         end
     },
-    qbx_core = {
-        resource = "qbx_core",
+    QBCore = {
+        resource = "qb-core",
         loader = function()
             if not next(Core) then
                 Core = exports['qb-core']:GetCoreObject()
@@ -34,7 +34,6 @@ local core_definitions = {
     },
     ox_lib = {
         resource = "ox_lib",
-        optional = true, -- add this
         ignore_source = '@@ox_lib/init.lua',
         loader = function()
             if lib then return lib end
@@ -104,19 +103,22 @@ function zutils.core_loader(core_name)
     return core
 end
 
-for core_name, def in pairs(core_definitions) do
-    if zutils.isResourceStarted(def.resource) then
-        if _G[core_name] == nil then
-            _G[core_name] = setmetatable({}, {
-                __index = function(self, key)
-                    return Core[key] or zutils.core_loader(core_name)[key]
-                end,
-                __call = function(self, ...)
-                    return Core(...)
-                end
-            })
-        end
+if not zutils.isResourceMissing("qb-core") then
+    if not zutils.isResourceStarted("qb-core") then
+        printwarn("QBCore is not started, please ensure that qb-core is started before this script.")
+        return
     end
+    if QBCore then return end
+    local core = zutils.isResourceStarted("qbx_core") and "qbx_core" or "QBCore"
+    QBCore = {}
+    setmetatable(QBCore, {
+        __index = function(self, key)
+            return Core[key] or zutils.core_loader(core)[key]
+        end,
+        __call = function(self, ...)
+            return Core(...)
+        end
+    })
 end
 
 return zutils.core_loader

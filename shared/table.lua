@@ -47,10 +47,10 @@ local function combine(t1, t2)
             table.insert(combined, v)
         end
     else
-        for k, v in pairs(t1) do
+        for k, v in pairs(t1 or {}) do
             combined[k] = v
         end
-        for k, v in pairs(t2) do
+        for k, v in pairs(t2 or {}) do
             combined[k] = v
         end
     end

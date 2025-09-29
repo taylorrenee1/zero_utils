@@ -1,4 +1,4 @@
-local target = zutils.bridge_loader("target", "client")
+local target = zutils.bridge_loader("target")
 if not target then return end
 
 local targets = {}

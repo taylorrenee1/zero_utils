@@ -1,4 +1,4 @@
-local emotes = zutils.bridge_loader("emote", "client")
+local emotes = zutils.bridge_loader("emote")
 if not emotes then return end
 zutils.animation = {}
 

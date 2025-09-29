@@ -1,4 +1,4 @@
-local progressbar = zutils.bridge_loader("progressbar", "client")
+local progressbar = zutils.bridge_loader("progressbar")
 if not progressbar then return end
 
 zutils.progressBar = progressbar

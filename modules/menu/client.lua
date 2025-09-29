@@ -1,4 +1,4 @@
-local menu = zutils.bridge_loader("menu", "client")
+local menu = zutils.bridge_loader("menu")
 if not menu then return end
 
 zutils.menu = {}

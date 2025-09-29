@@ -1,10 +1,11 @@
 if not Config.Bridge then Config.Bridge = {} end
+local loaded          = {}
 
 local default_bridges = {
     core = {
+        "qbx_core",
         "qb-core",
         "ox_core",
-        "qbx_core",
         "es_extended"
     },
     banking = {
@@ -19,8 +20,8 @@ local default_bridges = {
         "qs-inventory",
     },
     job = {
-        "qb-core",
         "qbx-core",
+        "qb-core",
         "es_extended",
         "ox_core",
     },
@@ -33,8 +34,8 @@ local default_bridges = {
     },
     callback = {
         "ox_lib",
-        "qb-core",
         "qbx-core",
+        "qb-core",
         "es_extended"
     },
     progressbar = {
@@ -72,16 +73,16 @@ local default_bridges = {
 }
 
 local bridge_aliases  = {
-    inventory = {
-        ox = "ox_inventory",
-        qb = "qb-inventory",
-        qs = "qs-inventory",
-    },
     core = {
         qb = "qb-core",
         qbx = "qbx_core",
         esx = "es_extended",
         ox = "ox_core",
+    },
+    inventory = {
+        ox = "ox_inventory",
+        qb = "qb-inventory",
+        qs = "qs-inventory",
     },
     banking = {
         fd = "fd_banking",
@@ -170,50 +171,67 @@ local function find_active_bridge(module_name, context)
     for _, bridge_resource in ipairs(bridges) do
         local resolved_bridge = resolve_bridge_alias(module_name, bridge_resource)
         if is_bridge_started(resolved_bridge) then
-            printdb("Found active bridge: %s for module: %s in context: %s", resolved, module_name, context)
+            printdb(false, "Found active bridge: %s for module: %s in context: %s", resolved_bridge, module_name, context)
             return resolved_bridge
         end
     end
-
     printerr("No active bridge found for module: %s in context: %s", module_name, context)
     return nil
 end
 
-local function bridge_loader(module_name, context)
+local function bridge_loader(module_name)
+    local context = zutils.context
+    if loaded[module_name .. context] then
+        return loaded[module_name .. context]
+    end
     while not zutils.initialized do
         Wait(100)
     end
+
     printdb("Attempting to load bridge for module: %s in context: %s", module_name, context or zutils.context)
-    context = context or zutils.context
     module_name = module_name:gsub("^%l", string.lower)
 
     local bridge_resource = find_active_bridge(module_name, context)
     if not bridge_resource then
         printerr("No active bridge found for module: %s in context: %s", module_name, context)
         return nil
+    else
+        printdb("I found this resource %s", bridge_resource)
     end
 
     if not virtual_bridges[bridge_resource] and not zutils.isResourceStarted(bridge_resource) then
         if zutils.isResourceMissing(bridge_resource) then
-            printerr("Bridge[%s]: resource(%s) missing. Please rename bridge file to resource name or change config to correct bridge",
+            printerr(
+                "Bridge[%s]: resource(%s) missing. Please rename bridge file to resource name or change config to correct bridge",
                 module_name, bridge_resource)
             return nil
         end
-        printerr("Bridge[%s]: resource(%s) is not started yet. you may be trying to call this too early", module_name, bridge_resource)
+        printerr("Bridge[%s]: resource(%s) is not started yet. you may be trying to call this too early", module_name,
+            bridge_resource)
         return nil
     end
 
-    local bridge_path = ("bridge/%s/%s/%s.lua"):format(module_name, bridge_resource, zutils.context)
-    printdb("Loading bridge: %s for module: %s", bridge_path, module_name)
+    local shared_path = ("bridge/%s/%s/shared.lua"):format(module_name, bridge_resource)
+    local shared_bridge, err = zutils.safefunc(function()
+        return zutils.require(shared_path)
+    end)()
 
-    local bridge = zutils.require(bridge_path)
-    if not bridge then
-        printerr("Bridge '%s' not found at path: '%s'", module_name, bridge_path)
+    local context_path, err = ("bridge/%s/%s/%s.lua"):format(module_name, bridge_resource, context)
+    local context_bridge = zutils.safefunc(function()
+        return zutils.require(context_path)
+    end)()
+
+    shared_bridge = table.combine(shared_bridge or {}, context_bridge or {})
+
+    if not shared_bridge then
+        printerr("No bridge files found for module: %s, resource: %s", module_name, bridge_resource)
         return nil
     end
 
-    printdb("Successfully loaded bridge: %s", bridge_path)
-    return bridge
+    printdb("Successfully loaded bridge: %s (%s)", module_name, context)
+
+    loaded[module_name .. context] = shared_bridge
+    return shared_bridge
 end
 
 zutils.bridge_loader = bridge_loader

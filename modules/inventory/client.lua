@@ -1,4 +1,4 @@
-local inventory = zutils.bridge_loader("inventory", "client")
+local inventory = zutils.bridge_loader("inventory")
 if not inventory then return end
 
 zutils.inventory = {}
@@ -7,7 +7,7 @@ function zutils.inventory.openInventory(inv_type, id)
     assert(inv_type, "Inventory must be specified")
     assert(id, "Inventory ID must be specified")
     if inv_type == "personal_stash" then
-        local allowed = zutils.callback.await("zutils:inventory:registerPersonalStash", nil, id)
+        local allowed = zutils.callback.await("zutils:inventory:registerPersonalStash:"..zutils.name, nil, id)
         if not allowed then
             return
         end
@@ -16,6 +16,7 @@ function zutils.inventory.openInventory(inv_type, id)
     end
     inventory.openInventory(inv_type, id)
 end
+
 zutils.inventory.OpenInventory = zutils.inventory.openInventory -- Alias for compatibility
 
 function zutils.inventory.hasItem(item, count, metadata)

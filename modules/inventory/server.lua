@@ -1,4 +1,4 @@
-local inventory = zutils.bridge_loader("inventory", "server")
+local inventory = zutils.bridge_loader("inventory")
 if not inventory then return end
 
 zutils.inventory = {}
@@ -25,6 +25,8 @@ end
 function zutils.inventory.createUseableItem(itemName, cb)
     return inventory.createUseableItem(itemName, cb)
 end
+
+zutils.inventory.CreateUseableItem = zutils.inventory.createUseableItem -- Alias for compatibility
 
 function zutils.inventory.addItem(inv, item, count, metadata, slot, cb)
     assert(item, "Item must be specified")
@@ -195,11 +197,11 @@ function zutils.inventory.craftItem(src, items, ingredients, multicraft)
     return true
 end
 
-zutils.callback.register("zutils:inventory:registerPersonalStash", function(source, id)
+zutils.callback.register("zutils:inventory:registerPersonalStash:"..zutils.name, function(source, id)
     local allowed_stash = personal_stashes[id]
     if not allowed_stash then
-        printwarn("(src:%s, name:%s) tried to register a personal stash that does not exist: %s", source,
-            GetPlayerName(source), id)
+        printwarn("(src:%s, name:%s) tried to register a personal stash that does not exist: %s", source, GetPlayerName(source), id)
+        zutils.logger(source, "exploit", "Tried to register a personal stash that does not exist: " .. id)
         return false
     end
 
@@ -207,7 +209,9 @@ zutils.callback.register("zutils:inventory:registerPersonalStash", function(sour
         local coords = allowed_stash.coords
         local player_coords = GetEntityCoords(GetPlayerPed(source))
         if #(coords - player_coords) > 5.0 then
-            printwarn("(src:%s, name:%s) tried to register a personal stash at an invalid location: %s", source, GetPlayerName(source), id)
+            printwarn("(src:%s, name:%s) tried to register a personal stash at an invalid location: %s", source,
+                GetPlayerName(source), id)
+            zutils.logger(source, "exploit", "Tried to register a personal stash at an invalid location: " .. id)
             return false
         end
     end

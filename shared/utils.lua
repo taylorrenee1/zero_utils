@@ -77,17 +77,30 @@ function zutils.uuid()
     end)
 end
 
-function zutils.await(fn, errmsg, timeout)
+function zutils.await(fn, errmsg, timeout, noerr)
+    if not errmsg then errmsg = "Await timed out" end
+    local arg
+    if errmsg[1] then
+        errmsg = errmsg[1]
+        arg = errmsg[2]
+    end
     timeout = timeout or 10000
     local start = GetGameTimer()
-    while not fn() do
+    local result
+    while not result do
+        result = fn()
         if GetGameTimer() - start > timeout then
-            printerr(errmsg[1] or errmsg or "Await timed out", errmsg[2])
+            if not noerr then
+                printerr(errmsg, arg)
+            else
+                return false, errmsg:format(arg)
+            end
         end
         Wait(0)
     end
-    return true
+    return result
 end
+
 
 
 
@@ -166,10 +179,6 @@ local function GetForwardVectorFromRot(rot)
     local x = math.rad(rot.x)
     local num = math.abs(math.cos(x))
     return vector3(-math.sin(z) * num, math.cos(z) * num, math.sin(x))
-end
-
-function clamp(min, value, max)
-    return math.max(min, math.min(value, max))
 end
 
 function RayCastFromPlayCam(distance, ignoreObj, rayIgnoreWorld, raycastWater)
@@ -325,10 +334,6 @@ local function GetForwardVectorFromRot(rot)
     local x = math.rad(rot.x)
     local num = math.abs(math.cos(x))
     return vector3(-math.sin(z) * num, math.cos(z) * num, math.sin(x))
-end
-
-function clamp(min, value, max)
-    return math.max(min, math.min(value, max))
 end
 
 function RayCastFromPlayCam(distance, ignoreObj, rayIgnoreWorld, raycastWater)

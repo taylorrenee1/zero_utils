@@ -1,4 +1,4 @@
-local callback = zutils.bridge_loader("callback", "shared")
+local callback = zutils.bridge_loader("callback")
 if not callback then return end
 if zutils.context == "client" then
     zutils.callback = setmetatable({}, {

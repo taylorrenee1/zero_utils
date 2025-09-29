@@ -1,4 +1,4 @@
-local shop = zutils.bridge_loader("shop", "client")
+local shop = zutils.bridge_loader("shop")
 if not shop then return end
 
 zutils.shop = {}

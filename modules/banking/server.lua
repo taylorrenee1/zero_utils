@@ -1,4 +1,4 @@
-local banking = zutils.bridge_loader("banking", "server")
+local banking = zutils.bridge_loader("banking")
 if not banking then return end
 
 zutils.banking = {}
