@@ -1,4 +1,4 @@
-local core = zutils.bridge_loader("core", "client")
+local core = zutils.bridge_loader("core")
 if not core then return end
 
 zutils.cache.job = {

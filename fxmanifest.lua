@@ -15,6 +15,7 @@ client_scripts {
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     "init.lua",
+    'bridge/inventory/ox_inventory/router.lua',
     "server/*.lua",
 }
 
@@ -23,8 +24,13 @@ files {
     'modules/**/client.lua',
     'modules/**/shared.lua',
     'bridge/**/**/client.lua',
-    -- 'bridge/**/**/shared.lua',
+    'bridge/**/**/shared.lua',
     'shared/*.lua'
 }
 
 dependency '/assetpacks'
+
+server_exports {
+  'ox_useable',
+  'ox_registerUseable',
+}
