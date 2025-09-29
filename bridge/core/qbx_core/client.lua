@@ -27,7 +27,8 @@ function core.getGroupInfo(isJob)
     return {
         name = group.name,
         grade = group.grade.level,
-        label = group.label
+        label = group.label,
+        isBoss = group.grade.isboss or false, -- Added isboss property
     }
 end
 
@@ -46,18 +47,10 @@ function core.isDead()
     return data.metadata and data.metadata.isdead
 end
 
-function core.setThirst(thirst)
-    local Player = QBCore.Functions.GetPlayerData()
-    Player.Functions.SetMetaData("thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + thirst)
-    TriggerEvent("hud:client:UpdateNeeds", Player.PlayerData.metadata.hunger, thirst)
-    return true
-end
-
-function core.setHunger(hunger)
-    local Player = QBCore.Functions.GetPlayerData()
-    Player.Functions.SetMetaData("hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + hunger)
-    TriggerEvent("hud:client:UpdateNeeds", hunger, Player.PlayerData.metadata.thirst)
-    return true
+function core.getVehicleProperties(vehicle)
+    local properties = QBCore.Functions.GetVehicleProperties(vehicle)
+    if not properties then return false, "Failed to get vehicle properties" end
+    return properties
 end
 
 function core.getPlayersFromCoords(coords, distance)

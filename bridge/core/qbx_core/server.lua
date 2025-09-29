@@ -1,17 +1,25 @@
 local core = {}
 
 function core.getPlayer(src)
-    local player = exports.qbx_core:GetPlayerData(tonumber(src))
+    local player = exports.qbx_core:GetPlayer(tonumber(src))
     if not player then return false, "Player not found" end
     return player
 end
 
 function core.getPlayerData(src)
-    local player, err = exports.qbx_core:GetPlayerData(tonumber(src))
+    local player, err = core.getPlayer(tonumber(src))
     if not player then return false, err end
     local player_data = player.PlayerData
     if not player_data then return false, "Player Data not found" end
     return player_data
+end
+
+function core.getGang(src)
+    local player_data, err = core.getPlayerData(src)
+    if not player_data then return false, err end
+    local gang = player_data.gang
+    if not gang then return false, "Gang not found" end
+    return gang
 end
 
 function core.getJob(src)
@@ -111,6 +119,18 @@ end
 
 function core.setArmour(src, armour)
     SetPedArmour(src, armour)
+end
+
+function core.removeMoney(src, amount, method, reason)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    return player.Functions.RemoveMoney(method, amount, reason)
+end
+
+function core.addMoney(src, amount, method, reason)
+    local player, err = core.getPlayer(src)
+    if not player then return false, err end
+    return player.Functions.AddMoney(method, amount, reason)
 end
 
 return core
