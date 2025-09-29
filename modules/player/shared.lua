@@ -50,16 +50,55 @@ function zutils.player.setThirst(src, thirst)
     return player.setThirst(src, thirst)
 end
 
+function zutils.player.addThirst(src, thirst)
+    return player.setThirst(src, thirst)
+end
+
 function zutils.player.setHunger(src, hunger)
     return player.setHunger(src, hunger)
 end
 
-function zutils.player.getPedArmour(src)
-    return GetPedArmour(src or PlayerPedId())
+function zutils.player.addHunger(src, hunger)
+    return player.setHunger(src, hunger)
 end
 
-function zutils.player.setArmour(armour, src)
-    return SetPedArmour(src or PlayerPedId(), GetPedArmour(PlayerPedId()) + armour)
+function zutils.player.setHealth(src, health)
+    health = health + 100 -- gta hp starts at 100 so convert
+    return player.setHealth(src, health)
+end
+
+function zutils.player.addHealth(src, health)
+    printdb(true, "setting health %s for %s", health, src)
+    return player.addHealth(src, health)
+end
+function zutils.player.removeHealth(src, health)
+    health = health * -1
+    return player.addHealth(src, health)
+end
+
+function zutils.player.addArmour(src, armour)
+    return player.setArmour(src, armour)
+end
+
+function zutils.player.getPedArmour(src)
+    return GetPedArmour(src)
+end
+
+function zutils.player.setArmour(src, armour)
+    local plyr = GetPlayerPed(src)
+    return SetPedArmour(plyr, (plyr + armour))
+end
+
+function zutils.player.setStress(src, stress)
+    return player.setStress(src, stress)
+end
+
+function zutils.player.relieveStress(src, stress)
+    return player.relieveStress(src, stress)
+end
+
+function zutils.player.addStress(src, stress)
+    return player.setStress(src, stress)
 end
 
 function zutils.player.removeMoney(src, amount, payment_method, reason)
