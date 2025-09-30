@@ -1,4 +1,4 @@
-function clamp(min, value, max)
+function clamp(value, min, max)
     return math.max(min, math.min(value, max))
 end
 

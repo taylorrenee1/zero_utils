@@ -1,4 +1,5 @@
 zutils.require('/shared/table.lua')
+zutils.require('/shared/math.lua')
 
 function zutils.isResourceStarted(resource)
     local started = GetResourceState(resource):find("started")
